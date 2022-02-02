@@ -1,6 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+#these global parameters are determined from scale_to_lumin.py and checkNevents1.py and checkNevents2.py
+global mixed_lumin, charged_lumin, uubar_lumin, ddbar_lumin, ssbar_lumin, ccbar_lumin, Nevents
+mixed_lumin = 0.0371 
+charged_lumin = 0.0350
+uubar_lumin = 0.0183
+ddbar_lumin = 0.0733
+ssbar_lumin = 0.0768
+ccbar_lumin = 0.0174
+Nevents = 50943396 
+
 class SingleDecay:
     def __init__(self, Mbc, isSignal, deltaE, SigProb, FEIProbRank, cosTBTO, R2, decaymode, sig_or_cont):
         self.Mbc = Mbc
@@ -42,17 +52,6 @@ class TypeOfDecay:
 			self.decaymode = np.append(self.decaymode, SingleDecay.decaymode)
 		pass
 		
-
-#these global parameters are determined from scale_to_lumin.py and checkNevents1.py and checkNevents2.py
-global mixed_lumin, charged_lumin, uubar_lumin, ddbar_lumin, ssbar_lumin, ccbar_lumin, Nevents
-
-mixed_lumin = 0.0371 
-charged_lumin = 0.0350
-uubar_lumin = 0.0183
-ddbar_lumin = 0.0733
-ssbar_lumin = 0.0768
-ccbar_lumin = 0.0174
-Nevents = 50943396 
 
 def FOM(variable, xmin, xmax, nbins, mixed, charged, uubar, ddbar, ssbar, ccbar):
 	#calculates the optimal cut for input variable (to get the best FOM)
@@ -295,7 +294,6 @@ def plot(variable, xmin, xmax, nbins, mixed, charged, uubar, ddbar, ssbar, ccbar
 	plt.savefig(variable+"_separated_class.png")
 	plt.close()
 
-
 	return()
 
 
@@ -307,7 +305,6 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 	sig_probs = np.append(np.linspace(0, 0.1, 100), np.linspace(0.1, 0.8, 100, endpoint = False))
 	sig_probs = np.append(sig_probs, np.linspace(0.8, 1, 100, endpoint = False))
 
-	
 	mixed_isSignal = mixed.isSignal
 	mixed_SigProb = mixed.SigProb
 	charged_SigProb = charged.SigProb
@@ -315,7 +312,6 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 	ddbar_SigProb = ddbar.SigProb
 	ssbar_SigProb = ssbar.SigProb
 	ccbar_SigProb = ccbar.SigProb
-
 
 	if deletemode == True:
 		mixed_decaymode = mixed.decaymode
@@ -325,11 +321,9 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 		ssbar_decaymode = ssbar.decaymode
 		ccbar_decaymode = ccbar.decaymode
 
-
 	eff = np.array([])
 	pure = np.array([])
 	
-
 	for i in sig_probs:
 		if deletemode == True:
 			mixed_isSignal = np.delete(mixed_isSignal, np.where(mixed_decaymode == delete))
@@ -346,7 +340,6 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 		ssbar_SigProb = np.delete(ssbar_SigProb, np.where(ssbar_SigProb < i))
 		ccbar_SigProb = np.delete(ccbar_SigProb, np.where(ccbar_SigProb < i))
 
-
 		if deletemode == True:
 			mixed_SigProb = np.delete(mixed_SigProb, np.where(mixed_decaymode == delete))
 			charged_SigProb = np.delete(charged_SigProb, np.where(charged_decaymode == delete))
@@ -354,7 +347,6 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 			ddbar_SigProb = np.delete(ddbar_SigProb, np.where(ddbar_decaymode == delete))
 			ssbar_SigProb = np.delete(ssbar_SigProb, np.where(ssbar_decaymode == delete))
 			ccbar_SigProb = np.delete(ccbar_SigProb, np.where(ccbar_decaymode == delete))
-
 
 		mixed_hist, bins = np.histogram(mixed_SigProb, range = (0, 1), bins = 100)
 		charged_hist, bins = np.histogram(charged_SigProb, range = (0, 1), bins = 100)
@@ -370,10 +362,8 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 		ssbar_hist = ssbar_hist / ssbar_lumin
 		ccbar_hist = ccbar_hist / ccbar_lumin
 
-
 		eff = np.append(eff, cnt_isSignal/Nevents)
 		pure = np.append(pure, cnt_isSignal/sum(mixed_hist + charged_hist + uubar_hist + ddbar_hist + ssbar_hist + ccbar_hist))
-
 
 	return(eff, pure)
 
@@ -382,7 +372,6 @@ def eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = False
 data = np.loadtxt("/home/belle2/fmencin/B/mixed/sig_and_cont/variabs2/cutted_variables.txt")
 
 decays = [SingleDecay(*i) for i in data]
-
 
 mixed = TypeOfDecay()
 charged = TypeOfDecay()
@@ -399,9 +388,7 @@ for i in decays:
     ssbar.add_decays(i, 4)
     ccbar.add_decays(i, 5)
 
-
 #FOM("R2", 0, 1, 100, mixed, charged, uubar, ddbar, ssbar, ccbar)
-
 
 for i in range(32):
 	eff_0, pure_0 = eff_vs_purity(mixed, charged, uubar, ddbar, ssbar, ccbar, deletemode = True, delete = i)
